@@ -3,780 +3,1349 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEN-NXT</title>
+    <title>AcademAI — GEN-NXT</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <style>
-        /* School Theme Colors */
         :root {
-            --primary-blue: #2C5AA0;
-            --secondary-gold: #FFD700;
-            --accent-green: #4CAF50;
-            --dark-blue: #1A3A6E;
-            --light-blue: #E8F4FD;
-            --white: #FFFFFF;
-            --gray-light: #F8F9FA;
-            --gray-medium: #6C757D;
-            --gray-dark: #343A40;
+            --ink: #050A14;
+            --surface: #0B1628;
+            --card: #0F1E35;
+            --border: rgba(255,255,255,0.07);
+            --accent: #00E5FF;
+            --accent2: #7B61FF;
+            --accent3: #FF6B6B;
+            --gold: #FFD166;
+            --text: #C8D8F0;
+            --muted: #5A7090;
+            --white: #ffffff;
+            --radius: 16px;
+            --radius-lg: 24px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--gray-dark);
-            background-color: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            background: var(--ink);
+            color: var(--text);
+            line-height: 1.65;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Navigation */
-        .navbar {
-            background: var(--white);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        /* ── NOISE TEXTURE OVERLAY ── */
+        body::before {
+            content: '';
             position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
         }
 
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        /* ── NAVIGATION ── */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 0 2rem;
+            height: 72px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            height: 70px;
+            justify-content: space-between;
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.3s;
         }
 
         .nav-logo {
             display: flex;
             align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-blue);
+            gap: 10px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.35rem;
+            color: var(--white);
+            text-decoration: none;
+            letter-spacing: -0.02em;
         }
 
-        .nav-logo i {
-            margin-right: 10px;
-            color: var(--secondary-gold);
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0,229,255,0.35);
         }
 
         .nav-menu {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 0.25rem;
         }
 
         .nav-link {
             text-decoration: none;
-            color: var(--gray-dark);
+            color: var(--muted);
+            font-size: 0.9rem;
             font-weight: 500;
-            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            letter-spacing: 0.01em;
         }
 
-        .nav-link:hover {
-            color: var(--primary-blue);
+        .nav-link:hover { color: var(--white); background: rgba(255,255,255,0.06); }
+
+        .nav-cta {
+            background: var(--accent);
+            color: #000 !important;
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
         }
+        .nav-cta:hover { background: #33EAFF !important; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,229,255,0.4); }
 
         .hamburger {
             display: none;
             flex-direction: column;
+            gap: 5px;
             cursor: pointer;
+            padding: 4px;
         }
-
         .bar {
-            width: 25px;
-            height: 3px;
-            background: var(--gray-dark);
-            margin: 3px 0;
+            width: 24px; height: 2px;
+            background: var(--white);
+            border-radius: 2px;
             transition: 0.3s;
         }
 
-        /* Hero Section */
+        /* ── HERO ── */
         .hero {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
-            color: var(--white);
-            padding: 120px 0 80px;
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            padding: 100px 2rem 60px;
         }
 
-        .hero-content {
+        /* animated grid background */
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(0,229,255,0.04) 0%, transparent 60%),
+                repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.025) 79px, rgba(255,255,255,0.025) 80px),
+                repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.025) 79px, rgba(255,255,255,0.025) 80px);
+            animation: gridPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* glowing orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            animation: orbFloat 12s ease-in-out infinite;
+        }
+        .orb-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0,229,255,0.12), transparent 70%);
+            top: -200px; left: -150px;
+            animation-delay: 0s;
+        }
+        .orb-2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(123,97,255,0.1), transparent 70%);
+            bottom: -150px; right: -100px;
+            animation-delay: -6s;
+        }
+        .orb-3 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,209,102,0.07), transparent 70%);
+            top: 40%; left: 50%;
+            animation-delay: -3s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.05); }
+        }
+
+        .hero-inner {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            width: 100%;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4rem;
+            gap: 5rem;
             align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,229,255,0.1);
+            border: 1px solid rgba(0,229,255,0.25);
+            border-radius: 100px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .badge-dot {
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,255,0.5); }
+            50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(0,229,255,0); }
         }
 
         .hero h1 {
-            font-size: 3.5rem;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.8rem, 5vw, 4.5rem);
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
             margin-bottom: 1.5rem;
-            line-height: 1.2;
         }
 
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
+        .hero h1 .gradient-text {
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .hero-buttons {
+        .hero-desc {
+            font-size: 1.1rem;
+            color: var(--text);
+            opacity: 0.8;
+            margin-bottom: 2.5rem;
+            max-width: 480px;
+            font-weight: 300;
+        }
+
+        .hero-actions {
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        .hero-image {
-            text-align: center;
-            font-size: 15rem;
-            color: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Buttons */
+        /* ── BUTTONS ── */
         .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 0.95rem;
             font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
             cursor: pointer;
-            transition: all 0.3s ease;
+            border: none;
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
+            transition: all 0.25s ease;
+            white-space: nowrap;
         }
 
         .btn-primary {
-            background: var(--secondary-gold);
-            color: var(--dark-blue);
+            background: linear-gradient(135deg, var(--accent), #0099FF);
+            color: #000;
+            box-shadow: 0 4px 24px rgba(0,229,255,0.3);
         }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,229,255,0.45); filter: brightness(1.1); }
 
-        .btn-primary:hover {
-            background: #FFC400;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
+        .btn-ghost {
             background: transparent;
             color: var(--white);
-            border: 2px solid var(--white);
+            border: 1px solid var(--border);
         }
-
-        .btn-secondary:hover {
-            background: var(--white);
-            color: var(--primary-blue);
-        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
 
         .btn-outline {
             background: transparent;
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
+            color: var(--accent);
+            border: 1px solid rgba(0,229,255,0.35);
+            font-size: 0.875rem;
+            padding: 10px 22px;
+        }
+        .btn-outline:hover { background: rgba(0,229,255,0.08); border-color: var(--accent); transform: translateY(-1px); }
+
+        /* hero visual */
+        .hero-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
-        .btn-outline:hover {
-            background: var(--primary-blue);
+        .hero-card-stack {
+            position: relative;
+            width: 340px;
+            height: 380px;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .fc-main {
+            width: 280px;
+            top: 30px; left: 30px;
+            animation: float1 6s ease-in-out infinite;
+            background: linear-gradient(145deg, #111F38, #0F1A2E);
+            border-color: rgba(0,229,255,0.15);
+        }
+
+        .fc-stat {
+            width: 160px;
+            bottom: 10px; right: 0;
+            animation: float2 5s ease-in-out infinite;
+            animation-delay: -2s;
+        }
+
+        .fc-tag {
+            width: 140px;
+            top: 0; right: 20px;
+            animation: float2 7s ease-in-out infinite;
+            animation-delay: -4s;
+            padding: 0.75rem 1rem;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+        }
+
+        .fc-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .fc-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
             color: var(--white);
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
         }
 
-        /* Sections */
-        section {
-            padding: 80px 0;
+        .ai-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,229,255,0.07);
+            border: 1px solid rgba(0,229,255,0.15);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
         }
 
-        h2 {
+        .progress-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 4px;
+        }
+
+        .stat-number {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(123,97,255,0.12);
+            border: 1px solid rgba(123,97,255,0.25);
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            color: #9D85FF;
+            font-weight: 500;
+        }
+
+        /* ── STATS BAR ── */
+        .stats-bar {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-item {
             text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--dark-blue);
         }
 
-        .section-subtitle {
-            text-align: center;
-            font-size: 1.2rem;
-            color: var(--gray-medium);
-            margin-bottom: 3rem;
+        .stat-item .num {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1;
+            margin-bottom: 4px;
         }
 
-        /* About Section */
-        .about {
-            background: var(--gray-light);
+        .stat-item .num span {
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .about-content {
-            max-width: 800px;
+        .stat-item .desc {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        /* ── SECTIONS ── */
+        section { padding: 96px 2rem; }
+
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .about-text h3 {
-            color: var(--primary-blue);
-            margin: 2rem 0 1rem;
-            font-size: 1.5rem;
+        .section-label {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
         }
 
-        .features {
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .section-sub {
+            font-size: 1.05rem;
+            color: var(--muted);
+            max-width: 520px;
+            font-weight: 300;
+        }
+
+        .section-header {
+            margin-bottom: 4rem;
+        }
+
+        /* ── COURSES (dynamic from supabase) ── */
+        #courses {
+            background: var(--surface);
+        }
+
+        #courses-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
 
-        .feature {
-            text-align: center;
-            padding: 2rem;
-            background: var(--white);
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        /* ── ABOUT ── */
+        .about {
+            background: var(--ink);
         }
 
-        .feature i {
-            font-size: 3rem;
-            color: var(--primary-blue);
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .mission-text {
+            font-size: 1.1rem;
+            color: var(--text);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .feature-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(0,229,255,0.3);
+            transform: translateY(-3px);
+        }
+
+        .feature-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
             margin-bottom: 1rem;
         }
 
-        .feature h4 {
-            color: var(--dark-blue);
-            margin-bottom: 1rem;
+        .fi-blue { background: rgba(0,229,255,0.1); color: var(--accent); }
+        .fi-purple { background: rgba(123,97,255,0.1); color: var(--accent2); }
+        .fi-orange { background: rgba(255,107,107,0.1); color: var(--accent3); }
+        .fi-gold { background: rgba(255,209,102,0.1); color: var(--gold); }
+
+        .feature-card h4 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            color: var(--white);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
         }
 
-        /* Courses Section */
+        .feature-card p {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .about-visual {
+            display: flex;
+            justify-content: center;
+        }
+
+        .about-graphic {
+            position: relative;
+            width: 380px;
+            height: 400px;
+        }
+
+        .ag-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid;
+            animation: ringRotate 20s linear infinite;
+        }
+
+        .ag-ring-1 {
+            width: 340px; height: 340px;
+            top: 30px; left: 20px;
+            border-color: rgba(0,229,255,0.12);
+            animation-direction: normal;
+        }
+        .ag-ring-2 {
+            width: 240px; height: 240px;
+            top: 80px; left: 70px;
+            border-color: rgba(123,97,255,0.15);
+            animation-direction: reverse;
+            animation-duration: 14s;
+        }
+        .ag-ring-3 {
+            width: 140px; height: 140px;
+            top: 130px; left: 120px;
+            border-color: rgba(255,209,102,0.2);
+            animation-duration: 8s;
+        }
+
+        @keyframes ringRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .ag-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            color: #000;
+            box-shadow: 0 0 60px rgba(0,229,255,0.4);
+            z-index: 2;
+        }
+
+        /* ── MAIN COURSES (static) ── */
+        #main-courses {
+            background: var(--surface);
+        }
+
         .course-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
 
         .course-card {
-            background: var(--white);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
             padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.3s ease;
-            border-top: 4px solid var(--primary-blue);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .course-card:hover {
-            transform: translateY(-5px);
+            border-color: rgba(0,229,255,0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
+        .course-card:hover::before { opacity: 1; }
+
         .course-icon {
-            font-size: 3rem;
-            color: var(--primary-blue);
-            margin-bottom: 1rem;
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            color: #000;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0,229,255,0.25);
         }
 
         .course-card h3 {
-            color: var(--dark-blue);
-            margin-bottom: 1rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            color: var(--white);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.01em;
+        }
+
+        .course-card p {
+            font-size: 0.875rem;
+            color: var(--muted);
+            margin-bottom: 1.25rem;
+            line-height: 1.65;
         }
 
         .course-features {
             list-style: none;
-            margin: 1.5rem 0;
-            text-align: left;
+            margin-bottom: 1.75rem;
         }
 
         .course-features li {
-            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
+            gap: 8px;
+            font-size: 0.825rem;
+            color: var(--text);
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        .course-features i {
-            color: var(--accent-green);
-            margin-right: 10px;
+        .course-features li:last-child { border-bottom: none; }
+
+        .course-features li i {
+            color: var(--accent);
+            font-size: 0.7rem;
+            width: 14px;
         }
 
-        /* Contact Section */
+        .coming-soon {
+            opacity: 0.5;
+        }
+
+        .cs-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gold);
+            background: rgba(255,209,102,0.1);
+            border: 1px solid rgba(255,209,102,0.2);
+            border-radius: 6px;
+            padding: 3px 10px;
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── CONTACT ── */
         .contact {
-            background: var(--gray-light);
+            background: var(--ink);
         }
 
-        .contact-content {
+        .contact-wrapper {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1.4fr;
             gap: 4rem;
-            max-width: 1000px;
-            margin: 0 auto;
+            align-items: start;
         }
 
         .contact-info {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 1.5rem;
         }
 
         .contact-item {
             display: flex;
             align-items: flex-start;
             gap: 1rem;
+            padding: 1.25rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
         }
 
-        .contact-item i {
-            font-size: 1.5rem;
-            color: var(--primary-blue);
-            margin-top: 5px;
+        .contact-icon {
+            width: 42px; height: 42px;
+            background: rgba(0,229,255,0.08);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent);
+            font-size: 1rem;
+            flex-shrink: 0;
         }
 
         .contact-item h4 {
-            color: var(--dark-blue);
-            margin-bottom: 0.5rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            color: var(--white);
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .contact-item p {
+            font-size: 0.85rem;
+            color: var(--muted);
         }
 
         .contact-form {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
+            padding: 12px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--white);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .form-group select option {
+            background: var(--surface);
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-blue);
+            border-color: rgba(0,229,255,0.4);
+            box-shadow: 0 0 0 3px rgba(0,229,255,0.07);
         }
 
-        /* Footer */
-        .footer {
-            background: var(--dark-blue);
-            color: var(--white);
-            padding: 50px 0 20px;
-        }
+        .form-group textarea { resize: vertical; }
 
-        .footer-content {
+        .form-row {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 3rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
-        .footer-logo i {
-            margin-right: 10px;
-            color: var(--secondary-gold);
-        }
-
-        .footer-section h4 {
-            margin-bottom: 1rem;
-            color: var(--secondary-gold);
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-section a {
-            color: var(--white);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section a:hover {
-            color: var(--secondary-gold);
-        }
-
-        .social-links {
-            display: flex;
+            grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
 
+        /* ── FOOTER ── */
+        .footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 60px 2rem 30px;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.7;
+            margin-top: 1rem;
+            max-width: 300px;
+        }
+
+        .footer-section h4 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            color: var(--white);
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.02em;
+        }
+
+        .footer-section ul { list-style: none; }
+
+        .footer-section ul li { margin-bottom: 0.6rem; }
+
+        .footer-section a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover { color: var(--accent); }
+
+        .social-links {
+            display: flex;
+            gap: 0.75rem;
+        }
+
         .social-links a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            transition: background 0.3s ease;
+            width: 38px; height: 38px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+            transition: all 0.2s;
         }
 
         .social-links a:hover {
-            background: var(--primary-blue);
+            background: rgba(0,229,255,0.1);
+            border-color: rgba(0,229,255,0.3);
+            color: var(--accent);
+            transform: translateY(-2px);
         }
 
         .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.7);
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
+        .footer-bottom p {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* ── ANIMATIONS ON SCROLL ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .hero-inner, .about-grid, .contact-wrapper {
+                grid-template-columns: 1fr;
+                gap: 3rem;
             }
 
+            .hero-visual { order: -1; }
+
+            .stats-inner { grid-template-columns: repeat(2, 1fr); }
+
+            .footer-top { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+            .footer-brand { grid-column: 1/-1; }
+
+            .features-grid { grid-template-columns: 1fr; }
+
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 640px) {
             .nav-menu {
                 position: fixed;
-                left: -100%;
-                top: 70px;
+                top: 72px; left: 0; right: 0;
+                background: rgba(5,10,20,0.97);
+                backdrop-filter: blur(20px);
                 flex-direction: column;
-                background: var(--white);
-                width: 100%;
-                text-align: center;
-                transition: 0.3s;
-                box-shadow: 0 10px 27px rgba(0,0,0,0.05);
-                padding: 2rem 0;
+                padding: 1.5rem;
+                gap: 0.25rem;
+                border-bottom: 1px solid var(--border);
+                transform: translateY(-120%);
+                transition: transform 0.3s ease;
             }
 
-            .nav-menu.active {
-                left: 0;
-            }
+            .nav-menu.active { transform: translateY(0); }
 
-            .hero-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
+            .hamburger { display: flex; }
 
-            .hero-image {
-                font-size: 8rem;
-                order: -1;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero-buttons {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-
-            .contact-content {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-            }
+            .hero h1 { font-size: 2.4rem; }
+            .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+            .footer-top { grid-template-columns: 1fr; }
+            .hero-card-stack { width: 280px; height: 300px; }
+            .fc-main { width: 220px; }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <i class="fas fa-graduation-cap"></i>
-                <span>AcademAI</span>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <a href="#home" class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        AcademAI
+    </a>
+    <ul class="nav-menu">
+        <li><a href="#home" class="nav-link">Home</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#main-courses" class="nav-link">Courses</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+        <li><a href="#main-courses" class="nav-link nav-cta">Explore Courses</a></li>
+    </ul>
+    <div class="hamburger">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section id="home" class="hero">
+    <div class="hero-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="hero-inner">
+        <div class="hero-text">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                AI-Powered Learning Platform
             </div>
-            <ul class="nav-menu">
-                <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="#main-courses" class="nav-link">Courses</a></li>
-                <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-            </ul>
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
+            <h1>Welcome to<br><span class="gradient-text">AcademAI</span></h1>
+            <p class="hero-desc">Your gateway to quality online education. Learn from expert instructors and transform your future — from Nursery through Grade 12 and beyond.</p>
+            <div class="hero-actions">
+                <button class="btn btn-primary" onclick="document.getElementById('main-courses').scrollIntoView({ behavior: 'smooth' })">
+                    <i class="fas fa-rocket"></i> Explore Courses
+                </button>
+                <button class="btn btn-ghost" onclick="document.getElementById('about').scrollIntoView({ behavior: 'smooth' })">
+                    Coming Soon <i class="fas fa-arrow-right"></i>
+                </button>
             </div>
         </div>
-    </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <div>
-                <h1>Welcome to AcademAI</h1>
-                <p>Your gateway to quality online education. Learn from expert instructors and transform your future.</p>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary" onclick="document.getElementById('main-courses').scrollIntoView({ behavior: 'smooth' })">
-    Explore Courses</button>
-                    <button class="btn btn-secondary" onclick="scrollToSection('about')">Coming Soon!</button>
+        <div class="hero-visual">
+            <div class="hero-card-stack">
+                <div class="floating-card fc-tag">
+                    <div class="fc-label">AI Status</div>
+                    <div class="chip"><i class="fas fa-circle" style="font-size:6px; color:#4ade80"></i> Tutor Active</div>
                 </div>
-            </div>
-            <div class="hero-image">
-                <i class="fas fa-laptop-code"></i>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Courses Section -->
-    <section id="courses" class="courses">
-        <div class="container">
-            <h2>Our Courses</h2>
-            <p class="section-subtitle">Explore AI-driven, engaging courses from Nursery to Grade 12 and beyond.</p>
-
-            <!-- This is where Supabase will load your course cards -->
-            <div id="courses-list" class="course-grid"></div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2>About AcademAI</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <h3>Our Mission</h3>
-                    <p>AcademAI is a family-founded online school dedicated to providing accessible, high-quality education to students worldwide. We believe learning should be engaging, personalized, and transformative.</p>
-                    
-                    <h3>Why Choose AcademAI?</h3>
-                    <div class="features">
-                        <div class="feature">
-                            <i class="fas fa-users"></i>
-                            <h4>Expert Instructors</h4>
-                            <p>Learn from industry professionals and experienced educators</p>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-clock"></i>
-                            <h4>Flexible Schedule</h4>
-                            <p>Study at your own pace with 24/7 course access</p>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-handshake"></i>
-                            <h4>Community Support</h4>
-                            <p>Join a vibrant learning community with peer support</p>
-                        </div>
+                <div class="floating-card fc-main">
+                    <div class="fc-label">Your Learning Path</div>
+                    <div class="fc-title">Mathematics — Grade 8</div>
+                    <div class="ai-bar">
+                        <i class="fas fa-robot"></i>
+                        AI Tutor is analyzing your progress...
                     </div>
+                    <div class="progress-row">
+                        <span>Algebra Foundations</span>
+                        <span style="color:var(--accent)">78%</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:78%"></div></div>
+                    <div class="progress-row">
+                        <span>Geometry Basics</span>
+                        <span style="color:var(--accent)">45%</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
+                </div>
+                <div class="floating-card fc-stat">
+                    <div class="fc-label">Students Enrolled</div>
+                    <div class="stat-number">1,240</div>
+                    <div class="stat-label">+12% this month</div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Courses Section -->
-    <section id="main-courses" class="courses">
-        <div class="container">
-            <h2>Our Courses</h2>
-            <p class="section-subtitle">Comprehensive learning paths for all skill levels</p>
-            
-            <div class="course-grid">
-                <div class="course-card">
-                    <div class="course-icon">
-                        <i class="fas fa-code"></i>
+<!-- Stats Bar -->
+<div class="stats-bar">
+    <div class="stats-inner">
+        <div class="stat-item reveal">
+            <div class="num"><span>1,200+</span></div>
+            <div class="desc">Active Students</div>
+        </div>
+        <div class="stat-item reveal">
+            <div class="num"><span>14</span></div>
+            <div class="desc">Grade Levels</div>
+        </div>
+        <div class="stat-item reveal">
+            <div class="num"><span>24/7</span></div>
+            <div class="desc">AI Tutor Access</div>
+        </div>
+        <div class="stat-item reveal">
+            <div class="num"><span>98%</span></div>
+            <div class="desc">Satisfaction Rate</div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic Courses (Supabase) -->
+<section id="courses" style="background: var(--surface); padding: 96px 2rem;">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-label">Live Catalogue</span>
+            <h2 class="section-title">Our Courses</h2>
+            <p class="section-sub">Explore AI-driven, engaging courses from Nursery to Grade 12 and beyond.</p>
+        </div>
+        <div id="courses-list" class="course-grid"></div>
+    </div>
+</section>
+
+<!-- About -->
+<section id="about" class="about">
+    <div class="container">
+        <div class="about-grid">
+            <div class="reveal">
+                <span class="section-label">Our Story</span>
+                <h2 class="section-title">About AcademAI</h2>
+                <p class="mission-text">AcademAI is a family-founded online school dedicated to providing accessible, high-quality education to students worldwide. We believe learning should be engaging, personalized, and transformative.</p>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon fi-blue"><i class="fas fa-users"></i></div>
+                        <h4>Expert Instructors</h4>
+                        <p>Learn from industry professionals and experienced educators.</p>
                     </div>
-                    <h3>Grades Nursery to 12th</h3>
-                    <p>A completly unique study method with AI Tutors </p>
-                    <ul class="course-features">
-                        <li><i class="fas fa-check"></i> Beginner to Advanced</li>
-                        <li><i class="fas fa-check"></i> 12 Weeks Duration</li>
-                        <li><i class="fas fa-check"></i> Project Portfolio</li>
-                    </ul>
-                   <button class="btn btn-outline" onclick="location.href='grades.html'">View Grades!</button>
+                    <div class="feature-card">
+                        <div class="feature-icon fi-purple"><i class="fas fa-clock"></i></div>
+                        <h4>Flexible Schedule</h4>
+                        <p>Study at your own pace with 24/7 course access.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon fi-orange"><i class="fas fa-handshake"></i></div>
+                        <h4>Community Support</h4>
+                        <p>Join a vibrant learning community with peer support.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon fi-gold"><i class="fas fa-robot"></i></div>
+                        <h4>AI Tutors</h4>
+                        <p>Personalized AI guidance that adapts to every student.</p>
+                    </div>
                 </div>
-
-                <div class="course-card">
-                    <div class="course-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h3>Data Science</h3>
-                    <p>Master data analysis, visualization, and machine learning techniques</p>
-                    <ul class="course-features">
-                        <li><i class="fas fa-check"></i> Python & R Programming</li>
-                        <li><i class="fas fa-check"></i> 16 Weeks Duration</li>
-                        <li><i class="fas fa-check"></i> Real-world Projects</li>
-                    </ul>
-                    <button class="btn btn-outline">Coming Soon!</button>
-                </div>
-
-                <div class="course-card">
-                    <div class="course-icon">
-                        <i class="fas fa-paint-brush"></i>
-                    </div>
-                    <h3>Graphic Design</h3>
-                    <p>Create stunning visuals and master design principles and tools</p>
-                    <ul class="course-features">
-                        <li><i class="fas fa-check"></i> Adobe Creative Suite</li>
-                        <li><i class="fas fa-check"></i> 10 Weeks Duration</li>
-                        <li><i class="fas fa-check"></i> Design Portfolio</li>
-                    </ul>
-                    <button class="btn btn-outline">Coming Soon!</button>
-                </div>
-
-                <div class="course-card">
-                    <div class="course-icon">
-                        <i class="fas fa-business-time"></i>
-                    </div>
-                    <h3>Business Management</h3>
-                    <p>Develop essential business skills and entrepreneurial mindset</p>
-                    <ul class="course-features">
-                        <li><i class="fas fa-check"></i> All Levels</li>
-                        <li><i class="fas fa-check"></i> 14 Weeks Duration</li>
-                        <li><i class="fas fa-check"></i> Business Plan Development</li>
-                    </ul>
-                    <button class="btn btn-outline">Coming Soon!</button>
+            </div>
+            <div class="about-visual reveal">
+                <div class="about-graphic">
+                    <div class="ag-ring ag-ring-1"></div>
+                    <div class="ag-ring ag-ring-2"></div>
+                    <div class="ag-ring ag-ring-3"></div>
+                    <div class="ag-center"><i class="fas fa-brain"></i></div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2>Contact Us</h2>
-            <p class="section-subtitle">Get in touch to start your learning journey</p>
-            
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <h4>Email</h4>
-                            <p>info@AcademAI.shofaar.com</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <h4>Phone</h4>
-                            <p>+1 (555) 123-AcademAI</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-clock"></i>
-                        <div>
-                            <h4>Office Hours</h4>
-                            <p>Mon-Fri: 9AM-6PM EST</p>
-                        </div>
+<!-- Main Courses (static) -->
+<section id="main-courses">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-label">Programs</span>
+            <h2 class="section-title">Learning Paths</h2>
+            <p class="section-sub">Comprehensive learning paths for all skill levels and ages.</p>
+        </div>
+
+        <div class="course-grid">
+            <div class="course-card reveal">
+                <div class="course-icon"><i class="fas fa-school"></i></div>
+                <h3>Grades Nursery to 12th</h3>
+                <p>A completely unique study method with AI Tutors guiding every step of your journey.</p>
+                <ul class="course-features">
+                    <li><i class="fas fa-check"></i> Beginner to Advanced</li>
+                    <li><i class="fas fa-check"></i> 12 Weeks Duration</li>
+                    <li><i class="fas fa-check"></i> Project Portfolio</li>
+                </ul>
+                <button class="btn btn-outline" onclick="location.href='grades.html'">
+                    View Grades <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="course-card coming-soon reveal">
+                <div class="course-icon" style="background: linear-gradient(135deg, var(--accent2), #5044CC)"><i class="fas fa-chart-bar"></i></div>
+                <div class="cs-badge">Coming Soon</div>
+                <h3>Data Science</h3>
+                <p>Master data analysis, visualization, and machine learning techniques.</p>
+                <ul class="course-features">
+                    <li><i class="fas fa-check"></i> Python & R Programming</li>
+                    <li><i class="fas fa-check"></i> 16 Weeks Duration</li>
+                    <li><i class="fas fa-check"></i> Real-world Projects</li>
+                </ul>
+                <button class="btn btn-ghost" disabled>Coming Soon</button>
+            </div>
+
+            <div class="course-card coming-soon reveal">
+                <div class="course-icon" style="background: linear-gradient(135deg, #FF6B6B, #CC4444)"><i class="fas fa-paint-brush"></i></div>
+                <div class="cs-badge">Coming Soon</div>
+                <h3>Graphic Design</h3>
+                <p>Create stunning visuals and master design principles and tools.</p>
+                <ul class="course-features">
+                    <li><i class="fas fa-check"></i> Adobe Creative Suite</li>
+                    <li><i class="fas fa-check"></i> 10 Weeks Duration</li>
+                    <li><i class="fas fa-check"></i> Design Portfolio</li>
+                </ul>
+                <button class="btn btn-ghost" disabled>Coming Soon</button>
+            </div>
+
+            <div class="course-card coming-soon reveal">
+                <div class="course-icon" style="background: linear-gradient(135deg, var(--gold), #CC9900)"><i class="fas fa-business-time"></i></div>
+                <div class="cs-badge">Coming Soon</div>
+                <h3>Business Management</h3>
+                <p>Develop essential business skills and entrepreneurial mindset.</p>
+                <ul class="course-features">
+                    <li><i class="fas fa-check"></i> All Levels</li>
+                    <li><i class="fas fa-check"></i> 14 Weeks Duration</li>
+                    <li><i class="fas fa-check"></i> Business Plan Development</li>
+                </ul>
+                <button class="btn btn-ghost" disabled>Coming Soon</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="contact">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-label">Get In Touch</span>
+            <h2 class="section-title">Contact Us</h2>
+            <p class="section-sub">Get in touch to start your learning journey with AcademAI.</p>
+        </div>
+
+        <div class="contact-wrapper">
+            <div class="contact-info reveal">
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <h4>Email</h4>
+                        <p>info@AcademAI.shofaar.com</p>
                     </div>
                 </div>
-                
-                <form class="contact-form" id="contactForm">
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                    <div>
+                        <h4>Phone</h4>
+                        <p>+1 (555) 123-AcademAI</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                    <div>
+                        <h4>Office Hours</h4>
+                        <p>Mon–Fri: 9AM–6PM EST</p>
+                    </div>
+                </div>
+            </div>
+
+            <form class="contact-form reveal" id="contactForm">
+                <div class="form-row">
                     <div class="form-group">
-                        <input type="text" id="name" name="name" placeholder="Your Name" required>
+                        <label>Your Name</label>
+                        <input type="text" id="name" name="name" placeholder="Jane Smith" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" id="email" name="email" placeholder="Your Email" required>
+                        <label>Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="jane@example.com" required>
                     </div>
-                    <div class="form-group">
-                        <select id="subject" name="subject" required>
-                            <option value="">Select Subject</option>
-                            <option value="general">General Inquiry</option>
-                            <option value="admissions">Admissions</option>
-                            <option value="technical">Technical Support</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
+                </div>
+                <div class="form-group">
+                    <label>Subject</label>
+                    <select id="subject" name="subject" required>
+                        <option value="">Select a subject</option>
+                        <option value="general">General Inquiry</option>
+                        <option value="admissions">Admissions</option>
+                        <option value="technical">Technical Support</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="message" name="message" placeholder="Tell us how we can help..." rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a href="#home" class="nav-logo" style="text-decoration:none">
+                    <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+                    AcademAI
+                </a>
+                <p>Transforming education through innovative online learning experiences. Family-founded, AI-powered, student-first.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#main-courses">Courses</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
             </div>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>AcademAI</span>
-                    </div>
-                    <p>Transforming education through innovative online learning experiences.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#courses">Courses</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Connect With Us</h4>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 AcademAI Online School. All rights reserved.</p>
-            </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 AcademAI Online School. All rights reserved.</p>
+            <p style="color:var(--muted); font-size:0.8rem;">Built with ❤️ for the next generation</p>
         </div>
-        <div id="courses"></div>
-    </footer>
+    </div>
+</footer>
 
-   <!-- Place where your Supabase courses will appear -->
-<div id="courses"></div>
-
-<!-- Supabase connection -->
+<!-- Supabase -->
 <script type="module">
   import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
   const SUPABASE_URL = "https://sfeaqafqgkgugcdwavdo.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmZWFxYWZxZ2tndWdjZHdhdmRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MDg3MDQsImV4cCI6MjA3ODA4NDcwNH0.5BdEck-RFrePdJLH6s1ocstZ-MAT6EjEjhXcB766GsE";
-
   const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   async function showCourses() {
     const { data: courses, error } = await db.from("courses").select("*");
-    if (error) {
-      console.error("Error loading courses:", error);
-      return;
-    }
-
+    if (error) { console.error("Error loading courses:", error); return; }
     const container = document.getElementById("courses-list");
-    if (!container) {
-      console.error("No #courses-list element found!");
-      return;
-    }
-
-    // Display course cards
+    if (!container) { console.error("No #courses-list element found!"); return; }
     container.innerHTML = "";
     courses.forEach((course) => {
       const card = document.createElement("div");
       card.className = "course-card";
       card.innerHTML = `
+        <div class="course-icon"><i class="fas fa-book-open"></i></div>
         <h3>${course.title}</h3>
         <p>${course.description}</p>
-        <button class="btn btn-outline">Enroll</button>
+        <button class="btn btn-outline">Enroll <i class="fas fa-arrow-right"></i></button>
       `;
       card.querySelector("button").addEventListener("click", () => enroll(course.id));
       container.appendChild(card);
@@ -787,13 +1356,7 @@
     const { data: userData } = await db.auth.getUser();
     const user = userData?.user;
     if (!user) return alert("Please log in first!");
-
-    const { error } = await db.from("enrollments").insert({
-      user_id: user.id,
-      course_id: courseId,
-      progress: 0,
-    });
-
+    const { error } = await db.from("enrollments").insert({ user_id: user.id, course_id: courseId, progress: 0 });
     if (error) console.error(error);
     else alert("Enrolled successfully!");
   }
@@ -801,34 +1364,52 @@
   showCourses();
 </script>
 
-<!-- Your navigation + form logic -->
 <script>
-  // Mobile Navigation Toggle
+  // Mobile nav
   const hamburger = document.querySelector('.hamburger');
   const navMenu = document.querySelector('.nav-menu');
-
   hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
     navMenu.classList.toggle('active');
+  });
+
+  // Close nav on link click
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => navMenu.classList.remove('active'));
   });
 
   // Smooth scroll
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+    anchor.addEventListener('click', function(e) {
       e.preventDefault();
       const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
 
   // Contact form
   document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    alert('Thank you for your message! We will get back to you soon.');
+    const btn = this.querySelector('[type="submit"]');
+    btn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
+    btn.style.background = 'linear-gradient(135deg, #4ade80, #22c55e)';
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+      btn.style.background = '';
+    }, 3000);
     this.reset();
   });
+
+  // Scroll reveal
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 </script>
 
 </body>
